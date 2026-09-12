@@ -6,18 +6,19 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
-
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 ---
 
 <html lang="en">
 	<head>
 		<BaseHead title={title} description={description} />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<style>
 			main {
-				width: calc(100% - 2em);
+				width: 100%;
 				max-width: 100%;
 				margin: 0;
+				overflow-x: hidden;
 			}
 			.hero-image {
 				width: 100%;
@@ -27,22 +28,27 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				margin: 0 auto;
 				border-radius: 12px;
 				box-shadow: var(--box-shadow);
+				max-width: 100%;
+				height: auto;
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
+				width: 100%;
+				max-width: 720px;
 				margin: auto;
 				padding: 1em;
 				color: rgb(var(--gray-dark));
+				box-sizing: border-box;
 			}
 			.title {
 				margin-bottom: 1em;
 				padding: 1em 0;
 				text-align: center;
-				line-height: 1;
+				line-height: 1.2;
 			}
 			.title h1 {
 				margin: 0 0 0.5em 0;
+				font-size: clamp(1.8rem, 5vw, 2.5rem);
+				word-wrap: break-word;
 			}
 			.date {
 				margin-bottom: 0.5em;
@@ -50,6 +56,11 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			}
 			.last-updated-on {
 				font-style: italic;
+			}
+			@media (max-width: 720px) {
+				.prose {
+					padding: 1em 1.2em;
+				}
 			}
 		</style>
 	</head>
