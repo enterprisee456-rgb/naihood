@@ -1,0 +1,53 @@
+---
+interface Props {
+	name: string;
+	handle: string;
+	area: string;
+	time: string;
+	initials: string;
+	avatarClass: string;
+	content: string;
+	image?: string;
+	imageAlt?: string;	
+	likes: number;
+	comments: number;
+	shares: number;
+	verified?: boolean;
+}
+
+const {
+	name,
+	handle,
+	area,
+	time,
+	initials,
+	avatarClass,
+	content,
+	image,
+	imageAlt = '',
+	likes,
+	comments,
+	shares,
+	verified = false,
+} = Astro.props;
+---
+<article class="post-card" data-area={area}>
+	<div class="post-head">
+		<div class={`avatar ${avatarClass}`} aria-hidden="true">{initials}<span class="online-dot"></span></div>
+		<div class="post-author">
+			<div class="author-line">
+				<strong>{name}</strong>
+				{verified && <span class="verified" aria-label="Verified neighbor">✓</span>}
+			</div>
+			<span>@{handle} <span class="muted-separator">·</span> 📍 {area} <span class="muted-separator">·</span> {time}</span>
+		</div>
+		<button class="more-button" type="button" aria-label={`More options for ${name}`}>•••</button>
+	</div>
+	<p class="post-copy">{content}</p>
+	{image && <img class="post-image" src={image} alt={imageAlt} loading="lazy" />}
+	<div class="post-actions" aria-label="Post actions">
+		<button class="post-action like-action" type="button" data-count={likes} aria-label={`Like post, ${likes} likes`}><span>♡</span><b>{likes}</b></button>
+		<button class="post-action" type="button" aria-label={`Comment, ${comments} comments`}><span>💬</span><b>{comments}</b></button>
+		<button class="post-action" type="button" aria-label={`Share, ${shares} shares`}><span>↗</span><b>{shares}</b></button>
+	</div>
+</article>

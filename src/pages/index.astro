@@ -1,6 +1,212 @@
 ---
 import BottomNav from '../components/BottomNav.astro';
+import PostCard from '../components/PostCard.astro';
+import Trending from '../components/Trending.astro';
 ---
-<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<style>*{box-sizing:border-box} body{margin:0;background:#0A0A0B;color:#fff;font-family:system-ui;padding-bottom:80px}.sticky{position:sticky;top:0;z-index:10}.top{padding:12px 16px;display:flex;justify-content:space-between;background:#000;border-bottom:1px solid rgba(255,255,255,.1);backdrop-filter:blur(12px)}main{width:100%;max-width:600px;margin:0 auto;padding:16px}.feed{padding:0}.post{background:#151517;border:1px solid #232326;border-radius:18px;padding:14px;margin:12px 0}.meta{color:#666;font-size:11px;margin-bottom:6px}.tabs{display:flex;gap:8px;padding:12px 16px;max-width:600px;margin:0 auto;overflow:auto}.tab{background:#151517;border:1px solid #232326;padding:6px 12px;border-radius:20px;font-size:12px;color:#888;cursor:pointer;white-space:nowrap}.tab.active{background:#A78BFA;color:#000}.fab{position:fixed;bottom:80px;right:20px;width:54px;height:54px;background:#A78BFA;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;text-decoration:none;z-index:40}</style></head>
-<body><header class="sticky top-0 bg-black border-b border-white/10 top"><div style="font-weight:900">nai<b style="color:#A78BFA">hood</b> <span style="color:#444;font-size:9px;margin-left:6px">◎ Kitale - V2</span></div><div style="font-size:11px;color:#666" id="who"></div></header><div class="tabs"><div class="tab active" data-f="all">All</div><div class="tab" data-f="Township">Township</div><div class="tab" data-f="Milimani">Milimani</div><div class="tab" data-f="Matisi">Matisi</div></div><main class="w-full max-w-[600px] mx-auto p-4 space-y-4"><div class="feed" id="feed">Loading...</div></main><a href="/post" class="fab">+</a><BottomNav active="feed" /><script>const user=localStorage.getItem('nai_user');const myHood=localStorage.getItem('nai_hood');if(!user)location.href='/login';else document.getElementById('who').innerText='@'+user;async function load(hood='all'){document.getElementById('feed').innerText='Loading...';try{const res=await fetch(hood==='all'?'/api/posts':`/api/posts?hood=${hood}`);const posts=await res.json();if(!posts.length){document.getElementById('feed').innerHTML=`<div style="text-align:center;color:#666;padding:40px">No posts in ${hood}. Be first!</div>`;return}document.getElementById('feed').innerHTML=posts.map(p=>`<div class="post"><div class="meta">@${p.username} - ${p.hood} - ${new Date(p.created_at).toLocaleTimeString()}</div><div>${p.text}</div></div>`).join('');}catch(e){document.getElementById('feed').innerText='Run with D1: wrangler pages dev dist --d1=DB=naihood-db'}}document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');load(t.dataset.f)});load();</script></body></html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#050507" />
+		<title>naihood - Kitale HQ</title>
+	</head>
+	<body>
+		<div class="noise" aria-hidden="true"></div>
+		<div class="glow glow-left" aria-hidden="true"></div>
+		<div class="glow glow-right" aria-hidden="true"></div>
+
+		<header class="glass-header">
+			<div class="header-inner">
+				<a class="brand" href="/" aria-label="naihood home">nai<span>hood</span></a>
+				<div class="header-location"><span class="pulse"></span> Kitale HQ</div>
+				<a class="header-profile" href="/me" aria-label="Open profile">◎</a>
+			</div>
+		</header>
+
+		<div class="shell">
+			<div class="content-grid">
+				<main class="main-column">
+					<section class="hero" aria-labelledby="hero-title">
+						<p class="eyebrow"><span></span> The neighborhood network</p>
+						<h1 id="hero-title">Your neighborhood,<br /><em>online.</em> Kitale HQ</h1>
+						<p class="hero-subtitle">The good stuff happening around you, from people who actually live here.</p>
+						<div class="hero-row">
+							<a class="primary-button pressable" href="/signup">Join Mtaa <span>↗</span></a>
+							<span class="hero-areas">Milimani <i>•</i> Matisi <i>•</i> Township</span>
+						</div>
+					</section>
+
+					<section class="feed-section" aria-labelledby="feed-title">
+						<div class="section-heading">
+							<div><p class="eyebrow">Live from around here</p><h2 id="feed-title">Your neighborhood feed</h2></div>
+							<button class="filter-button pressable" type="button" id="filter-button">All hoods <span>⌄</span></button>
+						</div>
+						<div class="filter-menu" id="filter-menu" hidden>
+							<button type="button" data-filter="all">All hoods</button>
+							<button type="button" data-filter="Milimani">Milimani</button>
+							<button type="button" data-filter="Matisi">Matisi</button>
+							<button type="button" data-filter="Township">Township</button>
+						</div>
+
+						<div class="feed-shell loading" id="feed-shell">
+							<div class="skeleton-layer" aria-label="Loading neighborhood posts">
+								<div class="skeleton-card"><span class="skeleton avatar-skeleton"></span><span class="skeleton line-skeleton"></span><span class="skeleton copy-skeleton"></span><span class="skeleton copy-skeleton short"></span></div>
+								<div class="skeleton-card"><span class="skeleton avatar-skeleton"></span><span class="skeleton line-skeleton"></span><span class="skeleton copy-skeleton"></span><span class="skeleton copy-skeleton short"></span></div>
+							</div>
+							<div class="feed-list" id="feed-list">
+								<PostCard name="Maya Naliaka" handle="maya.n" area="Milimani" time="12m" initials="MN" avatarClass="avatar-maya" content="Power is finally back on in Milimani. A very big thank you to the KPLC crew on the ground - the whole block is cheering. ⚡" image="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1200&q=85" imageAlt="Warm lights glowing in a neighborhood at dusk" likes={84} comments={18} shares={7} verified={true} />
+								<PostCard name="Brian Kibet" handle="briank" area="Matisi" time="38m" initials="BK" avatarClass="avatar-brian" content="Mama Wanjiku has the sweetest mangoes and fresh sukuma at the Matisi market today. Come early, they are going fast! 🥭" image="https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=1200&q=85" imageAlt="Fresh produce at a local market" likes={62} comments={11} shares={13} />
+								<PostCard name="Joy Wanyama" handle="joy.w" area="Township" time="1h" initials="JW" avatarClass="avatar-joy" content="Route 7 matatus are moving again via the usual stage. Slight traffic at the bridge, but nothing that should keep you home. Safe travels, neighbors." likes={46} comments={24} shares={9} />
+							</div>
+							<div class="empty-state" id="empty-state" hidden><span>◎</span><h3>Quiet around here</h3><p>No posts in this hood yet. Be the first to share what is happening.</p><a href="/post" class="secondary-button pressable">Start a post</a></div>
+						</div>
+					</section>
+				</main>
+				<Trending />
+			</div>
+		</div>
+		<BottomNav active="feed" />
+
+		<script>
+			const feedShell = document.getElementById('feed-shell');
+			const filterButton = document.getElementById('filter-button');
+			const filterMenu = document.getElementById('filter-menu');
+			const emptyState = document.getElementById('empty-state');
+			const cards = Array.from(document.querySelectorAll('.post-card'));
+
+			setTimeout(() => feedShell?.classList.remove('loading'), 520);
+			filterButton?.addEventListener('click', () => {
+				if (filterMenu) filterMenu.hidden = !filterMenu.hidden;
+			});
+			document.querySelectorAll('[data-filter]').forEach((button) => {
+				button.addEventListener('click', () => {
+					const filter = button.dataset.filter || 'all';
+					if (filterButton) filterButton.innerHTML = `${filter === 'all' ? 'All hoods' : filter} <span>⌄</span>`;
+					if (filterMenu) filterMenu.hidden = true;
+					let visible = 0;
+					cards.forEach((card) => {
+						const show = filter === 'all' || card.dataset.area === filter;
+						card.toggleAttribute('hidden', !show);
+						if (show) visible += 1;
+					});
+					if (emptyState) emptyState.hidden = visible !== 0;
+				});
+			});
+			document.querySelectorAll('.like-action').forEach((button) => {
+				button.addEventListener('click', () => {
+					const count = Number(button.dataset.count || 0) + (button.classList.toggle('liked') ? 1 : -1);
+					button.dataset.count = String(count);
+					const countLabel = button.querySelector('b');
+					if (countLabel) countLabel.textContent = String(count);
+				});
+			});
+		</script>
+	</body>
+</html>
+
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+	:global(*) { box-sizing: border-box; }
+	:global(html) { background: #050507; }
+	:global(body) { margin: 0; min-width: 320px; overflow-x: hidden; background: #050507; color: #f7f7f8; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; letter-spacing: -0.025em; }
+	:global(button), :global(a) { font: inherit; }
+	:global(button) { cursor: pointer; }
+	.noise { position: fixed; z-index: -2; inset: 0; opacity: .12; pointer-events: none; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E"); }
+	.glow { position: fixed; z-index: -1; width: 30rem; height: 30rem; border-radius: 50%; opacity: .18; filter: blur(100px); pointer-events: none; }
+	.glow-left { top: -13rem; left: -13rem; background: #7c3aed; }
+	.glow-right { top: 10rem; right: -16rem; background: #4f46e5; }
+	.glass-header { position: sticky; z-index: 20; top: 0; border-bottom: 1px solid rgba(255,255,255,.06); background: rgba(0,0,0,.7); backdrop-filter: blur(24px); }
+	.header-inner { display: flex; align-items: center; justify-content: space-between; width: min(100% - 2rem, 72rem); height: 4.5rem; margin: auto; }
+	.brand { color: #fff; font-size: 1.4rem; font-weight: 900; letter-spacing: -.09em; text-decoration: none; }
+	.brand span { color: #8b5cf6; }
+	.header-location { display: flex; align-items: center; gap: .45rem; color: #a0a0aa; font-size: .75rem; font-weight: 600; letter-spacing: -.01em; }
+	.pulse { width: .4rem; height: .4rem; border-radius: 50%; background: #a78bfa; box-shadow: 0 0 12px #8b5cf6; }
+	.header-profile { display: grid; width: 2.2rem; height: 2.2rem; place-items: center; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; color: #c4b5fd; text-decoration: none; }
+	.shell { width: min(100% - 2rem, 72rem); margin: auto; }
+	.content-grid { display: grid; grid-template-columns: minmax(0, 47rem) 18rem; gap: 3.5rem; justify-content: center; }
+	.main-column { min-width: 0; }
+	.hero { padding: 5.5rem 0 4.2rem; }
+	.eyebrow { display: flex; align-items: center; gap: .5rem; margin: 0 0 1.1rem; color: #a78bfa; font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+	.eyebrow span { width: .42rem; height: .42rem; border-radius: 50%; background: #8b5cf6; box-shadow: 0 0 12px #8b5cf6; }
+	h1 { max-width: 44rem; margin: 0; font-size: clamp(2.75rem, 7vw, 5.5rem); font-weight: 900; letter-spacing: -.09em; line-height: .96; }
+	h1 em { color: #a78bfa; font-style: normal; background: linear-gradient(110deg, #c4b5fd, #6366f1); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+	.hero-subtitle { max-width: 28rem; margin: 1.6rem 0 1.8rem; color: #85858e; font-size: 1rem; line-height: 1.6; letter-spacing: -.02em; }
+	.hero-row { display: flex; align-items: center; flex-wrap: wrap; gap: 1.2rem; }
+	.primary-button, .secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: .7rem; border-radius: 999px; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+	.primary-button { padding: .85rem 1.2rem .85rem 1.35rem; background: linear-gradient(110deg, #8b5cf6, #6366f1); box-shadow: 0 10px 30px rgba(99,102,241,.25); color: white; font-size: .85rem; font-weight: 800; }
+	.primary-button span { font-size: 1.1rem; }
+	.pressable:active { transform: scale(.95); }
+	.hero-areas { color: #666670; font-size: .72rem; font-weight: 600; }
+	.hero-areas i { margin: 0 .35rem; color: #8b5cf6; font-style: normal; }
+	.feed-section { position: relative; padding-bottom: 6rem; }
+	.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1.2rem; }
+	.section-heading .eyebrow { margin-bottom: .4rem; color: #696971; }
+	h2 { margin: 0; color: #f5f5f6; font-size: 1.25rem; font-weight: 800; letter-spacing: -.055em; }
+	.filter-button { display: flex; align-items: center; gap: .5rem; padding: .55rem .8rem; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; background: rgba(255,255,255,.03); color: #a2a2aa; font-size: .7rem; font-weight: 700; }
+	.filter-button span { color: #a78bfa; font-size: 1rem; }
+	.filter-menu { position: absolute; z-index: 5; top: 6.2rem; right: 0; display: grid; min-width: 9rem; padding: .35rem; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; background: #111114; box-shadow: 0 15px 35px rgba(0,0,0,.4); }
+	.filter-menu button { padding: .55rem .7rem; border: 0; border-radius: 9px; background: transparent; color: #9999a2; text-align: left; font-size: .72rem; }
+	.filter-menu button:hover { background: rgba(139,92,246,.13); color: white; }
+	.feed-shell { position: relative; min-height: 30rem; }
+	.feed-list { display: grid; gap: 1rem; }
+	.post-card { padding: 1.5rem; border: 1px solid rgba(255,255,255,.06); border-radius: 28px; background: rgba(15,15,16,.88); box-shadow: 0 20px 50px rgba(0,0,0,.12); opacity: 0; animation: rise-in .65s cubic-bezier(.2,.8,.2,1) forwards; transition: border-color .25s ease, transform .25s ease, background .25s ease; }
+	.post-card:nth-child(2) { animation-delay: .12s; }
+	.post-card:nth-child(3) { animation-delay: .24s; }
+	.post-card:hover { border-color: rgba(255,255,255,.1); background: #111113; transform: translateY(-4px); }
+	.post-card[hidden] { display: none; }
+	.post-head { display: flex; align-items: center; gap: .75rem; }
+	.avatar { position: relative; display: grid; width: 2.8rem; height: 2.8rem; flex: 0 0 auto; place-items: center; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; color: white; font-size: .68rem; font-weight: 800; }
+	.avatar-maya { background: linear-gradient(135deg, #d977a9, #7953be); }
+	.avatar-brian { background: linear-gradient(135deg, #f59e0b, #b45309); }
+	.avatar-joy { background: linear-gradient(135deg, #0f9b8e, #2563eb); }
+	.online-dot { position: absolute; right: -.05rem; bottom: .05rem; width: .62rem; height: .62rem; border: 2px solid #0f0f10; border-radius: 50%; background: #34d399; }
+	.post-author { min-width: 0; flex: 1; }
+	.author-line { display: flex; align-items: center; gap: .4rem; margin-bottom: .2rem; font-size: .88rem; }
+	.verified { display: grid; width: .9rem; height: .9rem; place-items: center; border-radius: 50%; background: #8b5cf6; color: white; font-size: .58rem; }
+	.post-author > span { color: #6e6e77; font-size: .68rem; letter-spacing: -.01em; }
+	.muted-separator { margin: 0 .2rem; color: #3f3f47; }
+	.more-button { align-self: start; padding: 0; border: 0; background: transparent; color: #65656d; font-size: .78rem; letter-spacing: .12em; }
+	.post-copy { margin: 1.25rem 0; color: #dedee2; font-size: 1rem; line-height: 1.62; letter-spacing: -.025em; }
+	.post-image { display: block; width: 100%; max-height: 22rem; object-fit: cover; border-radius: 1rem; }
+	.post-actions { display: flex; align-items: center; gap: 1.25rem; margin-top: 1.15rem; }
+	.post-action { display: inline-flex; align-items: center; gap: .38rem; padding: 0; border: 0; background: transparent; color: #66666f; transition: color .2s ease, transform .2s ease; }
+	.post-action:hover, .post-action.liked { color: #c4b5fd; }
+	.post-action:active { transform: scale(.95); }
+	.post-action span { font-size: 1.25rem; line-height: 1; }
+	.post-action b { font-size: .68rem; font-weight: 600; }
+	.skeleton-layer { display: none; gap: 1rem; }
+	.loading .skeleton-layer { display: grid; }
+	.loading .feed-list { display: none; }
+	.skeleton-card { display: grid; grid-template-columns: 2.8rem 1fr; gap: .75rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,.05); border-radius: 28px; background: #0f0f10; }
+	.skeleton { display: block; border-radius: 8px; background: linear-gradient(90deg, #161619 20%, #232329 45%, #161619 70%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+	.avatar-skeleton { width: 2.8rem; height: 2.8rem; grid-row: span 2; border-radius: 50%; }
+	.line-skeleton { width: 40%; height: .8rem; }
+	.copy-skeleton { width: 85%; height: .85rem; margin-top: .8rem; }
+	.copy-skeleton.short { width: 62%; grid-column: 2; margin-top: 0; }
+	.empty-state { padding: 4rem 1rem; color: #777780; text-align: center; }
+	.empty-state > span { color: #a78bfa; font-size: 2rem; }
+	.empty-state h3 { margin: .8rem 0 .3rem; color: #dedee2; font-size: 1rem; }
+	.empty-state p { max-width: 20rem; margin: 0 auto 1.2rem; font-size: .8rem; line-height: 1.6; }
+	.secondary-button { padding: .7rem 1rem; border: 1px solid rgba(255,255,255,.1); color: #c4b5fd; font-size: .75rem; font-weight: 700; }
+	.sidebar-stack { display: grid; align-content: start; gap: 1rem; padding-top: 11.5rem; }
+	.side-panel { padding: 1.2rem; border: 1px solid rgba(255,255,255,.06); border-radius: 22px; background: rgba(15,15,16,.65); }
+	.panel-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+	.panel-heading h2 { font-size: .8rem; letter-spacing: -.02em; }
+	.spark { color: #a78bfa; }
+	.trend-row { display: grid; grid-template-columns: 1.5rem 1fr auto; align-items: center; gap: .45rem; padding: .75rem 0; border-top: 1px solid rgba(255,255,255,.05); color: inherit; text-decoration: none; }
+	.trend-number { color: #686871; font-size: .64rem; font-weight: 700; }
+	.trend-row b, .neighbor b { display: block; color: #d4d4da; font-size: .7rem; }
+	.trend-row small, .neighbor small { display: block; margin-top: .2rem; color: #66666f; font-size: .62rem; }
+	.trend-arrow { color: #777780; font-size: .9rem; }
+	.live-label { display: flex; align-items: center; gap: .3rem; color: #34d399; font-size: .55rem; font-weight: 800; letter-spacing: .08em; }
+	.live-label i { width: .35rem; height: .35rem; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; }
+	.neighbor-list { display: grid; gap: .9rem; }
+	.neighbor { display: flex; align-items: center; gap: .6rem; }
+	.mini-avatar { position: relative; display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: 50%; color: white; font-size: .55rem; font-weight: 800; }
+	.mini-avatar i { position: absolute; right: -.05rem; bottom: 0; width: .45rem; height: .45rem; border: 2px solid #0f0f10; border-radius: 50%; background: #34d399; }
+	@keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+	@keyframes shimmer { to { background-position: -200% 0; } }
+	@media (max-width: 979px) { .content-grid { display: block; max-width: 47rem; margin: auto; } .sidebar-stack { display: none; } }
+	@media (max-width: 720px) { .shell { width: min(100% - 1.5rem, 47rem); } .header-inner { width: min(100% - 1.5rem, 47rem); height: 4rem; } .hero { padding: 3.7rem 0 3.2rem; } .hero-subtitle { font-size: .9rem; } .post-card { padding: 1.15rem; border-radius: 23px; } .feed-section { padding-bottom: 7rem; } }
+	@media (prefers-reduced-motion: reduce) { .post-card, .skeleton { animation: none; } .post-card { opacity: 1; } }
+</style>

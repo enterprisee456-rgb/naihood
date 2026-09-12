@@ -1,5 +1,72 @@
 ---
 const { active } = Astro.props;
 ---
-<style>.bottom{position:fixed;bottom:0;left:0;right:0;background:#0A0A0B;border-top:1px solid #1E1E20;display:flex;justify-content:space-around;padding:10px 0 14px;font-size:11px;z-index:50}.bottom a{color:#666;text-decoration:none;text-align:center}.bottom a.active{color:#A78BFA;font-weight:700}.bottom b{font-size:18px;display:block}</style>
-<div class="bottom"><a href="/" class={active==='feed'?'active':''}><b>⌂</b>Feed</a><a href="/hoods" class={active==='hoods'?'active':''}><b>◎</b>Hoods</a><a href="/post" class={active==='post'?'active':''}><b>+</b>Post</a><a href="/me" class={active==='me'?'active':''}><b>◍</b>Me</a></div>
+<nav class="bottom-nav" aria-label="Primary navigation">
+	<a href="/" class:list={{ active: active === 'feed' }}><span>⌂</span><small>Home</small></a>
+	<a href="/hoods" class:list={{ active: active === 'hoods' }}><span>◎</span><small>Hoods</small></a>
+	<a href="/post" class="create-link" class:list={{ active: active === 'post' }}><span>+</span><small>Post</small></a>
+	<a href="/me" class:list={{ active: active === 'me' }}><span>◉</span><small>Profile</small></a>
+</nav>
+
+<style>
+	.bottom-nav {
+		position: fixed;
+		z-index: 50;
+		bottom: 0;
+		left: 50%;
+		display: none;
+		align-items: center;
+		justify-content: space-around;
+		width: min(100%, 520px);
+		padding: 0.7rem 0.8rem calc(0.7rem + env(safe-area-inset-bottom));
+		transform: translateX(-50%);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-bottom: 0;
+		border-radius: 22px 22px 0 0;
+		background: rgba(5, 5, 7, 0.8);
+		box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.3);
+		backdrop-filter: blur(24px);
+	}
+
+	.bottom-nav a {
+		display: grid;
+		justify-items: center;
+		gap: 0.2rem;
+		min-width: 62px;
+		color: #6f6f78;
+		text-decoration: none;
+	}
+
+	.bottom-nav a span {
+		font-size: 1.3rem;
+		line-height: 1;
+	}
+
+	.bottom-nav a small {
+		font-size: 0.64rem;
+		font-weight: 700;
+	}
+
+	.bottom-nav a.active {
+		color: #a78bfa;
+	}
+
+	.bottom-nav .create-link span {
+		display: grid;
+		width: 2.5rem;
+		height: 2.5rem;
+		place-items: center;
+		margin-top: -1.2rem;
+		border: 4px solid #050507;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #8b5cf6, #6366f1);
+		color: white;
+		font-size: 1.5rem;
+	}
+
+	@media (max-width: 720px) {
+		.bottom-nav {
+			display: flex;
+		}
+	}
+</style>
