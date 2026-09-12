@@ -1,50 +1,26 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 ---
-
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+<html>
+<head>
+<title>Naihood - Eldoret</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{margin:0;background:#121212;color:#fff;font-family:system-ui}
+.top{padding:16px 20px;background:#000;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222;position:sticky;top:0}
+.logo{font-weight:900;font-size:24px} .logo span{color:#8B5CF6}
+.badge{background:#8B5CF6;padding:4px 10px;border-radius:20px;font-size:12px}
+.feed{max-width:500px;margin:0 auto;padding:16px}
+.card{background:#1E1E1E;border:1px solid #2A2A2A;border-radius:16px;padding:16px;margin-bottom:14px}
+.tag{font-size:11px;color:#8B5CF6;font-weight:700}
+.install{background:#8B5CF6;color:#fff;border:0;width:100%;padding:14px;border-radius:12px;font-weight:800;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="top"><div class="logo">nai<span>hood</span></div><div class="badge">📍 Eldoret</div></div>
+<div class="feed">
+<div class="card"><div class="tag">PIONEER • 2m ago</div><b>Blackout ni kila mahali ama ni kwetu tu?</b><p style="opacity:.7">KPLC wamezima tena 😭</p></div>
+<div class="card"><div class="tag">ELGON VIEW • 10m ago</div><b>Mandazi moto — 20 bob kwa gate</b><p style="opacity:.7">Chap chap, ziko 30 tu.</p></div>
+<button class="install">Install App — Like Play Store</button>
+</div>
+</body>
 </html>
