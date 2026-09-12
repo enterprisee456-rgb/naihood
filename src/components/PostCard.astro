@@ -1,53 +1,24 @@
 ---
-interface Props {
-	name: string;
-	handle: string;
-	area: string;
-	time: string;
-	initials: string;
-	avatarClass: string;
-	content: string;
-	image?: string;
-	imageAlt?: string;	
-	likes: number;
-	comments: number;
-	shares: number;
-	verified?: boolean;
-}
-
-const {
-	name,
-	handle,
-	area,
-	time,
-	initials,
-	avatarClass,
-	content,
-	image,
-	imageAlt = '',
-	likes,
-	comments,
-	shares,
-	verified = false,
-} = Astro.props;
+const { initials, name, handle, location, time, content, likes, comments, shares, image } = Astro.props
 ---
-<article class="post-card" data-area={area}>
-	<div class="post-head">
-		<div class={`avatar ${avatarClass}`} aria-hidden="true">{initials}<span class="online-dot"></span></div>
-		<div class="post-author">
-			<div class="author-line">
-				<strong>{name}</strong>
-				{verified && <span class="verified" aria-label="Verified neighbor">✓</span>}
-			</div>
-			<span>@{handle} <span class="muted-separator">·</span> 📍 {area} <span class="muted-separator">·</span> {time}</span>
-		</div>
-		<button class="more-button" type="button" aria-label={`More options for ${name}`}>•••</button>
-	</div>
-	<p class="post-copy">{content}</p>
-	{image && <img class="post-image" src={image} alt={imageAlt} loading="lazy" />}
-	<div class="post-actions" aria-label="Post actions">
-		<button class="post-action like-action" type="button" data-count={likes} aria-label={`Like post, ${likes} likes`}><span>♡</span><b>{likes}</b></button>
-		<button class="post-action" type="button" aria-label={`Comment, ${comments} comments`}><span>💬</span><b>{comments}</b></button>
-		<button class="post-action" type="button" aria-label={`Share, ${shares} shares`}><span>↗</span><b>{shares}</b></button>
-	</div>
+<article class="group bg-[#101012] border border-white/[0.07] rounded-[24px] overflow-hidden hover:border-white/[0.12] transition-all duration-300">
+  {image && <img src={image} class="w-full h-[340px] object-cover" loading="lazy" />}
+  <div class="p-5">
+    <div class="flex gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 grid place-items-center font-black text-[12px] shrink-0">{initials}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="font-bold text-[15px]">{name}</span>
+          <span class="text-zinc-500 text-[13px]">@{handle} · 📍 {location} · {time}</span>
+        </div>
+        <p class="text-[15px] leading-6 text-zinc-200 mt-2.5">{content}</p>
+        <div class="flex items-center gap-6 mt-4">
+          <button class="text-zinc-500 hover:text-pink-400 transition text-[13px] flex items-center gap-1.5">♡ {likes}</button>
+          <button class="text-zinc-500 hover:text-white transition text-[13px] flex items-center gap-1.5">💬 {comments}</button>
+          <button class="text-zinc-500 hover:text-white transition text-[13px] flex items-center gap-1.5">↗ {shares}</button>
+        </div>
+      </div>
+      <button class="text-zinc-600 hover:text-white h-fit">•••</button>
+    </div>
+  </div>
 </article>
