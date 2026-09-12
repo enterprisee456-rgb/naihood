@@ -1,0 +1,6 @@
+---
+import BottomNav from '../../components/BottomNav.astro';
+---
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>*{box-sizing:border-box} body{margin:0;background:#0A0A0B;color:#fff;font-family:system-ui;padding-bottom:80px}.top{padding:14px 16px;border-bottom:1px solid #1E1E20;display:flex;justify-content:space-between;position:sticky;top:0;background:#0A0A0B}.feed{max-width:480px;margin:0 auto;padding:12px}.post{background:#151517;border:1px solid #232326;border-radius:18px;padding:14px;margin:12px 0}</style></head>
+<body><div class="top"><a href="/hoods" style="color:#fff;text-decoration:none">←</a><b id="title">Hood</b><span></span></div><div class="feed" id="feed">Loading...</div><BottomNav active="hoods" /><script>const hoodName=decodeURIComponent(location.pathname.split('/').pop());document.getElementById('title').innerText=hoodName;async function load(){const res=await fetch(`/api/posts?hood=${hoodName}`);const posts=await res.json();document.getElementById('feed').innerHTML=posts.length?posts.map(p=>`<div class="post"><div style="color:#666;font-size:11px">@${p.username}</div><div>${p.text}</div></div>`).join(''):`<div style="text-align:center;color:#666;padding:40px">No posts yet in ${hoodName}. Be first!</div>`}load();</script></body></html>

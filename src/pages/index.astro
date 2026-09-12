@@ -1,26 +1,6 @@
 ---
+import BottomNav from '../components/BottomNav.astro';
 ---
-<html>
-<head>
-<title>Naihood - Eldoret</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{margin:0;background:#121212;color:#fff;font-family:system-ui}
-.top{padding:16px 20px;background:#000;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222;position:sticky;top:0}
-.logo{font-weight:900;font-size:24px} .logo span{color:#8B5CF6}
-.badge{background:#8B5CF6;padding:4px 10px;border-radius:20px;font-size:12px}
-.feed{max-width:500px;margin:0 auto;padding:16px}
-.card{background:#1E1E1E;border:1px solid #2A2A2A;border-radius:16px;padding:16px;margin-bottom:14px}
-.tag{font-size:11px;color:#8B5CF6;font-weight:700}
-.install{background:#8B5CF6;color:#fff;border:0;width:100%;padding:14px;border-radius:12px;font-weight:800;margin-top:10px}
-</style>
-</head>
-<body>
-<div class="top"><div class="logo">nai<span>hood</span></div><div class="badge">📍 Eldoret</div></div>
-<div class="feed">
-<div class="card"><div class="tag">PIONEER • 2m ago</div><b>Blackout ni kila mahali ama ni kwetu tu?</b><p style="opacity:.7">KPLC wamezima tena 😭</p></div>
-<div class="card"><div class="tag">ELGON VIEW • 10m ago</div><b>Mandazi moto — 20 bob kwa gate</b><p style="opacity:.7">Chap chap, ziko 30 tu.</p></div>
-<button class="install">Install App — Like Play Store</button>
-</div>
-</body>
-</html>
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>*{box-sizing:border-box} body{margin:0;background:#0A0A0B;color:#fff;font-family:system-ui;padding-bottom:80px}.top{position:sticky;top:0;background:#0A0A0Bf2;backdrop-filter:blur(12px);border-bottom:1px solid #1E1E20;padding:12px 16px;display:flex;justify-content:space-between;z-index:10}.feed{max-width:480px;margin:0 auto;padding:12px}.post{background:#151517;border:1px solid #232326;border-radius:18px;padding:14px;margin:12px 0}.meta{color:#666;font-size:11px;margin-bottom:6px}.tabs{display:flex;gap:8px;padding:12px 16px;max-width:480px;margin:0 auto;overflow:auto}.tab{background:#151517;border:1px solid #232326;padding:6px 12px;border-radius:20px;font-size:12px;color:#888;cursor:pointer;white-space:nowrap}.tab.active{background:#A78BFA;color:#000}.fab{position:fixed;bottom:80px;right:20px;width:54px;height:54px;background:#A78BFA;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;text-decoration:none;z-index:40}</style></head>
+<body><div class="top"><div style="font-weight:900">nai<b style="color:#A78BFA">hood</b> <span style="color:#444;font-size:9px;margin-left:6px">KITALE HQ • V2</span></div><div style="font-size:11px;color:#666" id="who"></div></div><div class="tabs"><div class="tab active" data-f="all">All</div><div class="tab" data-f="Township">Township</div><div class="tab" data-f="Milimani">Milimani</div><div class="tab" data-f="Matisi">Matisi</div></div><div class="feed" id="feed">Loading...</div><a href="/post" class="fab">+</a><BottomNav active="feed" /><script>const user=localStorage.getItem('nai_user');const myHood=localStorage.getItem('nai_hood');if(!user)location.href='/login';else document.getElementById('who').innerText='@'+user;async function load(hood='all'){document.getElementById('feed').innerText='Loading...';try{const res=await fetch(hood==='all'?'/api/posts':`/api/posts?hood=${hood}`);const posts=await res.json();if(!posts.length){document.getElementById('feed').innerHTML=`<div style="text-align:center;color:#666;padding:40px">No posts in ${hood}. Be first!</div>`;return}document.getElementById('feed').innerHTML=posts.map(p=>`<div class="post"><div class="meta">@${p.username} • ${p.hood} • ${new Date(p.created_at).toLocaleTimeString()}</div><div>${p.text}</div></div>`).join('');}catch(e){document.getElementById('feed').innerText='Run with D1: wrangler pages dev dist --d1=DB=naihood-db'}}document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');load(t.dataset.f)});load();</script></body></html>

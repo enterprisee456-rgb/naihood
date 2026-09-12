@@ -1,0 +1,6 @@
+---
+import BottomNav from '../components/BottomNav.astro';
+---
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>*{box-sizing:border-box} body{margin:0;background:#0A0A0B;color:#fff;font-family:system-ui;padding-bottom:80px}.wrap{max-width:480px;margin:0 auto;padding:24px}.avatar{width:64px;height:64px;background:#A78BFA;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900}.btn{width:100%;background:#1E1E20;border:1px solid #2A2A2A;color:#fff;padding:12px;border-radius:12px;margin-top:12px;cursor:pointer}</style></head>
+<body><div class="wrap"><div class="avatar" id="av">?</div><h2 id="u">@user</h2><p id="h" style="color:#888">Hood: -</p><button class="btn" onclick="localStorage.clear();location.href='/signup'">Logout</button></div><BottomNav active="me" /><script>const u=localStorage.getItem('nai_user')||'user';const h=localStorage.getItem('nai_hood')||'-';document.getElementById('u').innerText='@'+u;document.getElementById('h').innerText='Hood: '+h;document.getElementById('av').innerText=u[0]?.toUpperCase();if(!localStorage.getItem('nai_user'))location.href='/login';</script></body></html>

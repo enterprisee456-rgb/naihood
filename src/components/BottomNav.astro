@@ -1,0 +1,5 @@
+---
+const { active } = Astro.props;
+---
+<style>.bottom{position:fixed;bottom:0;left:0;right:0;background:#0A0A0B;border-top:1px solid #1E1E20;display:flex;justify-content:space-around;padding:10px 0 14px;font-size:11px;z-index:50}.bottom a{color:#666;text-decoration:none;text-align:center}.bottom a.active{color:#A78BFA;font-weight:700}.bottom b{font-size:18px;display:block}</style>
+<div class="bottom"><a href="/" class={active==='feed'?'active':''}><b>⌂</b>Feed</a><a href="/hoods" class={active==='hoods'?'active':''}><b>◎</b>Hoods</a><a href="/post" class={active==='post'?'active':''}><b>+</b>Post</a><a href="/me" class={active==='me'?'active':''}><b>◍</b>Me</a></div>
