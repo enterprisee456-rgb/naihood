@@ -1,0 +1,21 @@
+---
+---
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#0A0A0B;color:#fff;font-family:system-ui;height:100vh;display:flex;align-items:center;justify-content:center}
+.bg{position:fixed;inset:0;background:radial-gradient(600px at 20% 10%, #4C1D95 0%, transparent 60%)}
+.card{width:100%;max-width:380px;background:#16161A;border:1px solid #2A2A2E;border-radius:24px;padding:28px;margin:16px}
+input,select{width:100%;background:#0F0F10;border:1px solid #2A2A2A;border-radius:12px;padding:14px;margin:8px 0;color:#fff}
+.btn{width:100%;background:#A78BFA;color:#000;border:0;padding:14px;border-radius:12px;font-weight:800;margin-top:14px}
+.hint{color:#555;font-size:11px;margin-top:-4px;margin-bottom:8px}
+</style></head>
+<body><div class="bg"></div>
+<div class="card">
+<div style="font-size:32px;font-weight:900">Join nai<b style="color:#A78BFA">hood</b></div>
+<p style="color:#9CA3AF;font-size:13px">Kitale HQ - Your estate, your people.</p>
+<input placeholder="@username (3-15 chars)"/>
+<div class="hint">e.g. milimani_mum, matisi_ke</div>
+<input type="password" placeholder="Password (6+ chars)"/>
+<button class="btn" onclick="location.href='/login'">Create @username</button>
+<p style="text-align:center;margin-top:14px;font-size:12px;color:#666">Have account? <a href="/login" style="color:#A78BFA;text-decoration:none">Login</a></p>
+</div></body></html>
