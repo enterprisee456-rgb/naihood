@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   const session = await getSessionUser();
   if (!session) return NextResponse.json({ error: "Login required." }, { status: 401 });
   const body = await request.json() as { listingId?: string; body?: string };
-  if (!body.listingId || !body.body?.trim()) return NextResponse.json({ error: "Listing and message are required." }, { status: 400 });
+  if (!body.listingId || !body.body?.trim() || body.body.length > 2000) return NextResponse.json({ error: "Listing and message are required; messages must be under 2,000 characters." }, { status: 400 });
   const listing = await prisma.listing.findFirst({ where: { id: body.listingId, status: "ACTIVE" }, select: { id: true, ownerId: true, title: true } });
   if (!listing || listing.ownerId === session.sub) return NextResponse.json({ error: "That listing cannot start a conversation." }, { status: 400 });
   const conversation = await prisma.conversation.upsert({ where: { listingId_seekerId_ownerId: { listingId: listing.id, seekerId: session.sub, ownerId: listing.ownerId } }, update: {}, create: { listingId: listing.id, seekerId: session.sub, ownerId: listing.ownerId } });

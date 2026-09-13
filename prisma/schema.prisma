@@ -72,7 +72,7 @@ model Listing {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   ownerId      String
-  owner        User          @relation(fields: [ownerId], references: [id])
+  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   locationId   String
   location     Location      @relation(fields: [locationId], references: [id])
   inquiries    Inquiry[]
@@ -167,6 +167,6 @@ model Inquiry {
   createdAt    DateTime @default(now())
   seekerId     String
   listingId    String
-  seeker       User     @relation(fields: [seekerId], references: [id])
-  listing      Listing  @relation(fields: [listingId], references: [id])
+  seeker       User     @relation(fields: [seekerId], references: [id], onDelete: Cascade)
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
 }

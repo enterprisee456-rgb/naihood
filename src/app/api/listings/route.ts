@@ -53,9 +53,9 @@ export async function GET(request: NextRequest) {
 }
 
 const listingCreateSchema = z.object({
-  name: z.string().trim().min(2), phone: z.string().trim().min(7), title: z.string().trim().min(5), description: z.string().trim().min(15),
-  type: z.enum(["RENT", "SALE"]), propertyType: z.enum(["APARTMENT", "HOUSE", "BED_SITTER", "STUDIO", "LAND", "COMMERCIAL"]), priceKes: z.coerce.number().int().positive(), imageUrl: z.string().url(),
-  bedrooms: z.coerce.number().int().nonnegative().optional(), bathrooms: z.coerce.number().int().nonnegative().optional(), amenities: z.string().default(""), county: z.string().trim().min(2), town: z.string().trim().min(2), estate: z.string().trim().min(2),
+  name: z.string().trim().min(2).max(100), phone: z.string().trim().min(7).max(30), title: z.string().trim().min(5).max(160), description: z.string().trim().min(15).max(4000),
+  type: z.enum(["RENT", "SALE"]), propertyType: z.enum(["APARTMENT", "HOUSE", "BED_SITTER", "STUDIO", "LAND", "COMMERCIAL"]), priceKes: z.coerce.number().int().positive().max(2_000_000_000), imageUrl: z.string().url().refine((value) => { const protocol = new URL(value).protocol; return protocol === "https:" || protocol === "http:"; }, "Image URL must use HTTP or HTTPS."),
+  bedrooms: z.coerce.number().int().nonnegative().max(50).optional(), bathrooms: z.coerce.number().int().nonnegative().max(50).optional(), amenities: z.string().max(1000).default(""), county: z.string().trim().min(2).max(100), town: z.string().trim().min(2).max(100), estate: z.string().trim().min(2).max(100),
 });
 
 export async function POST(request: NextRequest) {
@@ -67,5 +67,8 @@ export async function POST(request: NextRequest) {
   const input = parsed.data;
   const location = await prisma.location.findFirst({ where: { county: input.county, town: input.town, estate: input.estate } }) ?? await prisma.location.create({ data: { county: input.county, town: input.town, estate: input.estate } });
   const listing = await prisma.listing.create({ data: { title: input.title, description: input.description, type: input.type, propertyType: input.propertyType, priceKes: input.priceKes, bedrooms: input.bedrooms, bathrooms: input.bathrooms, amenities: input.amenities, imageUrl: input.imageUrl, ownerId: session.sub, locationId: location.id } });
+  const recentSearches = await prisma.recentSearch.findMany({ where: { OR: [{ county: "" }, { county: input.county }], AND: [{ OR: [{ town: "" }, { town: input.town }] }, { OR: [{ estate: "" }, { estate: input.estate }] }, { OR: [{ type: "" }, { type: input.type }] }, { OR: [{ propertyType: "" }, { propertyType: input.propertyType }] }] }, select: { userId: true } });
+  const recipients = [...new Set(recentSearches.map((search) => search.userId).filter((userId) => userId !== session.sub))];
+  if (recipients.length) await prisma.notification.createMany({ data: recipients.map((userId) => ({ userId, type: "NEW_MATCH", title: "A new home matches your search", body: `${listing.title} is now listed in ${input.town}.`, href: `/listings/${listing.id}` })) });
   return NextResponse.json({ data: listing }, { status: 201 });
 }

@@ -14,7 +14,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSessionUser(); if (!session) return NextResponse.json({ error: "Login required." }, { status: 401 });
   const { id } = await params; const body = await request.json() as { body?: string };
-  if (!body.body?.trim()) return NextResponse.json({ error: "Message cannot be empty." }, { status: 400 });
+  if (!body.body?.trim() || body.body.length > 2000) return NextResponse.json({ error: "Message must be between 1 and 2,000 characters." }, { status: 400 });
   const conversation = await prisma.conversation.findFirst({ where: { id, OR: [{ seekerId: session.sub }, { ownerId: session.sub }] }, select: { id: true, seekerId: true, ownerId: true, listing: { select: { title: true } } } });
   if (!conversation) return NextResponse.json({ error: "Conversation not found." }, { status: 404 });
   const recipientId = conversation.seekerId === session.sub ? conversation.ownerId : conversation.seekerId;

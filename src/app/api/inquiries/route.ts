@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 
-const inquirySchema = z.object({ listingId: z.string().min(1), name: z.string().trim().min(2), phone: z.string().trim().min(7), message: z.string().trim().min(5) });
+const inquirySchema = z.object({ listingId: z.string().min(1).max(100), name: z.string().trim().min(2).max(100), phone: z.string().trim().min(7).max(30), message: z.string().trim().min(5).max(2000) });
 
 export async function POST(request: NextRequest) {
   const parsed = inquirySchema.safeParse(await request.json());
