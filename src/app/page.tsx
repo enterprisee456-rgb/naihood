@@ -1,17 +1,18 @@
 import Link from "next/link";
 import ListingsExplorer from "@/components/listings/ListingsExplorer";
+import SiteHeader from "@/components/SiteHeader";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const featured = await prisma.listing.findFirst({ where: { status: "ACTIVE" }, include: { location: true }, orderBy: { createdAt: "desc" } });
+  const placeName = featured ? `${featured.location.estate}, ${featured.location.town}` : "Your next neighbourhood";
   return (
-    <main className="site-shell">
-      <nav className="nav"><Link className="logo" href="/">nai<span>hood</span></Link><div className="nav-location">⌖ Kitale HQ</div><div className="nav-actions"><a href="#how-it-works">How it works</a><a className="nav-button" href="#list-property">List a property</a><button className="profile-button" type="button" aria-label="Open account">◎</button></div></nav>
-      <section className="hero">
-        <div className="hero-copy"><span className="kicker">KENYA&apos;S PROPERTY NETWORK</span><h1>Find a place<br />to call <em>home.</em></h1><p>Real homes. Verified local agents. A simpler way to find your next chapter in Kitale.</p><div className="hero-chips"><span>✓ Verified listings</span><span>↗ WhatsApp-friendly</span></div></div>
-        <div className="hero-card"><div className="hero-card-top"><span>Looking around?</span><span className="live-dot">● LIVE</span></div><strong>Kitale has<br /><em>options.</em></strong><p>From a quiet bedsitter in Township to your forever home in Milimani.</p><a href="#listings">Explore homes <span>↘</span></a></div>
-      </section>
-      <section className="location-strip"><div><span className="strip-label">EXPLORE BY PLACE</span><strong>Kitale, Trans-Nzoia</strong></div><div className="place-links"><span>Milimani</span><span>Township</span><span>Matisi</span><span>+ more</span></div></section>
-      <section className="listings-section" id="listings"><div className="section-intro"><div><span className="kicker">LIVE INVENTORY</span><h2>Homes worth<br /><em>coming home to.</em></h2></div><p>Browse current homes from people who know Kitale best.</p></div><ListingsExplorer /></section>
-      <footer id="how-it-works"><span className="logo">nai<span>hood</span></span><span>Built for better moves in Kenya.</span></footer>
+    <main>
+      <SiteHeader />
+      <section className="hero shell"><div className="hero-copy"><p className="eyebrow">A better way to move in Kenya</p><h1>Find your next<br /><i>good place.</i></h1><p className="hero-lede">Thoughtfully listed homes, apartments and land from people who know their neighbourhoods.</p><div className="hero-proof"><span>01</span><span className="proof-line" /><span>Local listings</span><span>02</span><span className="proof-line" /><span>Real conversations</span></div></div><div className="hero-scene" style={featured ? { backgroundImage: `linear-gradient(145deg, rgba(23,77,67,.2), transparent 40%), url("${featured.imageUrl}")` } : undefined} aria-label={featured ? featured.title : "Featured homes near you"}><div className="scene-label"><span>Featured neighbourhood</span><strong>{placeName}</strong></div><div className="scene-note">{featured ? <>A place with<br /><i>room to breathe.</i></> : <>Find your<br /><i>good place.</i></>}</div></div></section>
+      <section className="search-band shell" id="homes"><div className="search-heading"><span className="eyebrow">THE NAIHOOD EDIT</span><h2>Start with a feeling,<br /><i>then find the address.</i></h2></div><ListingsExplorer /></section>
+      <section className="neighbourhood-band"><div className="shell neighbourhood-content"><div><p className="eyebrow">Good places, close by</p><h2>{featured ? featured.location.town : "Your next town"} is<br /><i>open for you.</i></h2></div><div className="neighbourhood-copy"><p>Explore current homes from people who know their neighbourhoods best.</p><Link href="/#homes">Explore homes <span>↗</span></Link></div></div></section>
+      <footer className="footer shell"><Link className="wordmark" href="/">nai<span>hood</span></Link><span>Built for better moves in Kenya.</span><Link href="/list-your-property">List your property <span>↗</span></Link></footer>
     </main>
   );
 }
