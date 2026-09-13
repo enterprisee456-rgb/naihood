@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ListingType {
+  RENT
+  SALE
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  BED_SITTER
+  STUDIO
+  LAND
+  COMMERCIAL
+}
+
+enum ListingStatus {
+  ACTIVE
+  PAUSED
+  SOLD
+  RENTED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  name      String
+  role      String   @default("SEEKER")
+  createdAt DateTime @default(now())
+  listings  Listing[]
+  inquiries Inquiry[]
+}
+
+model Location {
+  id       String    @id @default(cuid())
+  county   String
+  town     String
+  estate   String
+  listings Listing[]
+
+  @@index([county, town, estate])
+}
+
+model Listing {
+  id           String        @id @default(cuid())
+  title        String
+  description  String
+  type         ListingType
+  propertyType PropertyType
+  priceKes     Int
+  bedrooms     Int?
+  bathrooms    Int?
+  amenities    String        @default("")
+  imageUrl     String
+  status       ListingStatus @default(ACTIVE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  ownerId      String
+  owner        User          @relation(fields: [ownerId], references: [id])
+  locationId   String
+  location     Location      @relation(fields: [locationId], references: [id])
+  inquiries    Inquiry[]
+
+  @@index([status, type, priceKes])
+  @@index([locationId])
+}
+
+model Inquiry {
+  id           String   @id @default(cuid())
+  message      String
+  contactPhone String
+  createdAt    DateTime @default(now())
+  seekerId     String
+  listingId    String
+  seeker       User     @relation(fields: [seekerId], references: [id])
+  listing      Listing  @relation(fields: [listingId], references: [id])
+}

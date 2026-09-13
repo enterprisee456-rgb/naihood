@@ -1,7 +1,0 @@
-name = "naihood"
-pages_build_output_dir = "./dist"
-compatibility_date = "2024-01-01"
-[[d1_databases]]
-binding = "DB"
-database_name = "naihood-db"
-database_id = "naihood-db"
