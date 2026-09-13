@@ -23,6 +23,8 @@ export async function GET(request: NextRequest) {
       ...(filters.minPrice || filters.maxPrice
         ? { priceKes: { gte: filters.minPrice, lte: filters.maxPrice } }
         : {}),
+      ...(filters.minBedrooms !== undefined ? { bedrooms: { gte: filters.minBedrooms } } : {}),
+      ...(filters.minBathrooms !== undefined ? { bathrooms: { gte: filters.minBathrooms } } : {}),
       ...(filters.q
         ? {
             OR: [

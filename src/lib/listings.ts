@@ -10,6 +10,8 @@ export const listingQuerySchema = z.object({
   propertyType: z.enum(Object.values(PropertyType) as [PropertyType, ...PropertyType[]]).optional(),
   minPrice: z.coerce.number().int().nonnegative().optional(),
   maxPrice: z.coerce.number().int().positive().optional(),
+  minBedrooms: z.coerce.number().int().nonnegative().optional(),
+  minBathrooms: z.coerce.number().int().nonnegative().optional(),
 });
 
 export type ListingQuery = z.infer<typeof listingQuerySchema>;
