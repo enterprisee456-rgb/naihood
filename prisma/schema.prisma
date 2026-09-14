@@ -8,6 +8,31 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum UserRole {
+  SEEKER
+  AGENT
+  LANDLORD
+}
+
+model User {
+  id              String   @id @default(cuid())
+  phone           String   @unique
+  name            String
+  email           String?  @unique
+  passwordHash    String?
+  role            UserRole @default(SEEKER)
+  createdAt       DateTime @default(now())
+
+  listings        Listing[]
+  inquiries       Inquiry[]
+  savedListings   SavedListing[]
+  recentSearches  RecentSearch[]
+  conversationsAsSeeker Conversation[] @relation("SeekerConversations")
+  conversationsAsOwner  Conversation[] @relation("OwnerConversations")
+  messages        Message[]
+  notifications   Notification[]
+}
+
 enum ListingType {
   RENT
   SALE
@@ -27,24 +52,6 @@ enum ListingStatus {
   PAUSED
   SOLD
   RENTED
-}
-
-model User {
-  id        String   @id @default(cuid())
-  phone     String   @unique
-  name      String
-  email     String?  @unique
-  passwordHash String?
-  role      String   @default("SEEKER")
-  createdAt DateTime @default(now())
-  listings  Listing[]
-  inquiries Inquiry[]
-  savedListings SavedListing[]
-  recentSearches RecentSearch[]
-  conversationsAsSeeker Conversation[] @relation("SeekerConversations")
-  conversationsAsOwner Conversation[] @relation("OwnerConversations")
-  messages Message[]
-  notifications Notification[]
 }
 
 model Location {

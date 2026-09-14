@@ -1,43 +1,75 @@
-import bcrypt from "bcryptjs";
-import { jwtVerify, SignJWT } from "jose";
-import { cookies } from "next/headers";
-import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs"
+import { jwtVerify, SignJWT } from "jose"
+import { cookies } from "next/headers"
+import { prisma } from "@/lib/prisma"
+import { UserRole } from "@prisma/client"
 
-const sessionCookie = "naihood_session";
-const sessionDuration = 60 * 60 * 24 * 7;
+type SessionPayload = {
+  sub: string
+  name: string
+  role: UserRole
+  phone: string
+}
 
-type SessionPayload = { sub: string; name: string; role: string };
+const sessionCookie = "naihood_session"
+const sessionDuration = 60 * 60 * 24 * 7
 
 function getSecret() {
-  const value = process.env.AUTH_SECRET;
-  if (!value) throw new Error("AUTH_SECRET is required for authentication.");
-  return new TextEncoder().encode(value);
+  const value = process.env.AUTH_SECRET
+  if (!value) throw new Error("AUTH_SECRET is required")
+  return new TextEncoder().encode(value)
 }
 
-export async function hashPassword(password: string) { return bcrypt.hash(password, 12); }
-export async function verifyPassword(password: string, hash: string) { return bcrypt.compare(password, hash); }
-
-export async function createSession(user: { id: string; name: string; role: string }) {
-  const token = await new SignJWT({ name: user.name, role: user.role }).setProtectedHeader({ alg: "HS256" }).setSubject(user.id).setIssuedAt().setExpirationTime(`${sessionDuration}s`).sign(getSecret());
-  (await cookies()).set(sessionCookie, token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: sessionDuration });
+export async function hashPassword(p: string) {
+  return bcrypt.hash(p, 10)
 }
 
-export async function clearSession() { (await cookies()).delete(sessionCookie); }
+export async function verifyPassword(p: string, h: string) {
+  return bcrypt.compare(p, h)
+}
+
+export async function createSession(payload: SessionPayload) {
+  const token = await new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: "HS256" })
+    .setSubject(payload.sub)
+    .setExpirationTime(`${sessionDuration}s`)
+    .sign(getSecret())
+
+  ;(await cookies()).set(sessionCookie, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: sessionDuration,
+    path: "/",
+  })
+}
 
 export async function getSessionUser(): Promise<SessionPayload | null> {
-  const token = (await cookies()).get(sessionCookie)?.value;
-  if (!token) return null;
+  const token = (await cookies()).get(sessionCookie)?.value
+  if (!token) return null
   try {
-    const { payload } = await jwtVerify(token, getSecret());
-    if (!payload.sub || typeof payload.name !== "string" || typeof payload.role !== "string") return null;
-    return { sub: payload.sub, name: payload.name, role: payload.role };
-  } catch { return null; }
+    const { payload } = await jwtVerify(token, getSecret())
+    const data = payload as any
+    return {
+      sub: String(data.sub),
+      name: String(data.name),
+      role: data.role as UserRole,
+      phone: String(data.phone),
+    }
+  } catch {
+    return null
+  }
 }
 
 export async function getCurrentUser() {
-  const session = await getSessionUser();
-  if (!session) return null;
-  return prisma.user.findUnique({ where: { id: session.sub }, select: { id: true, name: true, email: true, phone: true, role: true } });
+  const session = await getSessionUser()
+  if (!session) return null
+  return prisma.user.findUnique({ where: { id: session.sub } })
 }
 
-export function isProvider(role?: string | null) { return role === "AGENT" || role === "LANDLORD"; }
+export function isProvider(role?: UserRole | null) {
+  return role === "AGENT" || role === "LANDLORD"
+}
+
+export async function clearSession() {
+  ;(await cookies()).delete(sessionCookie)
+}
